@@ -12,13 +12,21 @@ const debug = require('debug')('sound-stream-recorder:main');
 const outfiledir = process.env.FILE_DIR || '/data';
 const outfileprefix = process.env.FILE_PREFIX || '';
 const outfileext = process.env.FILE_EXT || 'mp3';
-const post_process_script = process.env.POST_PROCESS_SCRIPT || undefined;
+const post_proc_proj_path = process.env.POST_PROCESS_PROJECT_PATH || undefined;
 const url = process.env.STREAM_URL;
 const start_schedule = process.env.START_SCHEDULE;
 const duration_sec = process.env.DURATION_SEC;
 if (!url || !start_schedule || !duration_sec) {
   console.log('Missing required environment variables');
+  console.log('STREAM_URL: ' + url);
+  console.log('START_SCHEDULE: ' + start_schedule);
+  console.log('DURATION_SEC: ' + duration_sec);
   return;
+}
+
+if (post_proc_proj_path) {
+  debug('Checking install for post process project in ' + post_proc_proj_path);
+  let code = child_process.execSync('npm install', {'cwd': post_proc_proj_path});
 }
 
 debug('Running schedule: ' + start_schedule);
@@ -38,11 +46,11 @@ let job = schedule.scheduleJob(start_schedule, () => {
     debug('Stopping job');
     stream.pause();
     stream.abort();
-    if (post_process_script) {
-      debug('Running post process script: ' + post_process_script);
-      let forked = child_process.fork(post_process_script);
-      forked.on('message', (msg) => {
-        debug('post_proc: ' + msg);
+    if (post_proc_proj_path) {
+      debug('Running post process script (npm start -- ' + outfilename + ') in ' + post_proc_proj_path);
+      let child = child_process.spawn('npm', ['start', '-- ', outfilename], {'cwd': post_proc_proj_path, 'stdio': [0,1,2]});
+      child.on('exit', (code, sig) => {
+        debug('post_proc exiting with: ' + code);
       });
     }
   }, duration_sec * 1000, stream);
