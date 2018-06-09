@@ -21,6 +21,7 @@ if (!url || !start_schedule || !duration_sec) {
   return;
 }
 
+debug('Running schedule: ' + start_schedule);
 let job = schedule.scheduleJob(start_schedule, () => {
 
   let dt = new Date();
