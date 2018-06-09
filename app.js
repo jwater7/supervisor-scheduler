@@ -22,6 +22,8 @@ if (!url || !start_schedule || !duration_sec) {
 }
 
 debug('Running schedule: ' + start_schedule);
+// TODO run the job if we initialized after the schedule
+// TODO this is GMT, need to support localtime
 let job = schedule.scheduleJob(start_schedule, () => {
 
   let dt = new Date();
