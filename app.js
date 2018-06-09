@@ -25,7 +25,7 @@ debug('Running schedule: ' + start_schedule);
 let job = schedule.scheduleJob(start_schedule, () => {
 
   let dt = new Date();
-  let outfilename = path.join(outfiledir, outfileprefix, dt.toISOString() + '.' + outfileext);
+  let outfilename = path.join(outfiledir, outfileprefix + dt.toISOString() + '.' + outfileext);
   debug('Starting new schedule at ' + dt.toISOString() + ' for ' + outfilename );
 
   let output = fs.createWriteStream(outfilename);
