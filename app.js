@@ -4,7 +4,7 @@
 const path = require('path');
 const fs = require('fs');
 const request = require('request');
-const schedule = require('node-schedule');
+const cron = require('cron');
 const child_process = require('child_process');
 const debug = require('debug')('sound-stream-recorder:main');
 //const pjson = require('./package.json');
@@ -15,12 +15,11 @@ const outfileext = process.env.FILE_EXT || 'mp3';
 const post_proc_proj_path = process.env.POST_PROCESS_PROJECT_PATH || undefined;
 const url = process.env.STREAM_URL;
 const start_schedule = process.env.START_SCHEDULE;
-const duration_sec = process.env.DURATION_SEC;
-if (!url || !start_schedule || !duration_sec) {
+const duration_sec = Number(process.env.DURATION_SEC) || 0;
+if (!url || !start_schedule) {
   console.log('Missing required environment variables');
   console.log('STREAM_URL: ' + url);
   console.log('START_SCHEDULE: ' + start_schedule);
-  console.log('DURATION_SEC: ' + duration_sec);
   return;
 }
 
@@ -29,18 +28,22 @@ if (post_proc_proj_path) {
   let code = child_process.execSync('npm install', {'cwd': post_proc_proj_path});
 }
 
-debug('Running schedule: ' + start_schedule);
+debug('Setting up the scheduler with schedule: ' + start_schedule);
 // TODO run the job if we initialized after the schedule
 // TODO this is GMT, need to support localtime
-let job = schedule.scheduleJob(start_schedule, () => {
+let job = new cron.CronJob(start_schedule, () => {
 
   let dt = new Date();
   let outfilename = path.join(outfiledir, outfileprefix + dt.toISOString() + '.' + outfileext);
-  debug('Starting new schedule at ' + dt.toISOString() + ' for ' + outfilename );
+  debug('Starting new scheduled job at ' + dt.toISOString() + ' for ' + outfilename );
 
   let output = fs.createWriteStream(outfilename);
   let stream = request(url);
   stream.pipe(output);
+
+  if (!duration_sec) {
+    return;
+  }
 
   setTimeout(() => {
     debug('Stopping job');
@@ -56,4 +59,8 @@ let job = schedule.scheduleJob(start_schedule, () => {
   }, duration_sec * 1000, stream);
 
 });
+
+debug('Starting the scheduler...');
+job.start();
+debug('Started');
 
