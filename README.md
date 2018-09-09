@@ -3,7 +3,7 @@
 Stream audio to a file on a schedule
 Optionally post-process the file after duration
 
-Supported environment variables:
+### Supported environment variables
 
 Required:
 * STREAM_URL
@@ -28,13 +28,15 @@ Optional:
   * E.g. '/post' (see post-process project requirements)
 * "DEBUG=sound-stream-recorder:*"
 
-## Be sure timezone is mounted in the docker container for an accurate schedule:
+### Be sure timezone is set in the docker container for an accurate schedule:
 ~~~~
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
+    environment:
+      - "TZ=America/Los_Angeles"
 ~~~~
 
-## Post-process project requirements:
+### Post-process project requirements:
 Must be a NodeJS project with a package.json so "npm install" and "npm start" can be run on it during runtime.
 The first argument (translates to #2, with node as #0 and app.js as #1) to the application is the filename of the recording
 
