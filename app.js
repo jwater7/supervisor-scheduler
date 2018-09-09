@@ -7,7 +7,7 @@ const request = require('request');
 const cron = require('cron');
 const cron_parser = require('cron-parser');
 const child_process = require('child_process');
-const debug = require('debug')('sound-stream-recorder:main');
+const debug = require('debug')('supervisor-scheduler:main');
 //const pjson = require('./package.json');
 
 const post_proc_proj_path = process.env.POST_PROCESS_PROJECT_PATH || undefined;
