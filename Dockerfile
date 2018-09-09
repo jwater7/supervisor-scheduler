@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM jwater7/alpine-supervisor-python-nodejs
 LABEL maintainer "j"
 
 # Backend node_modules
@@ -14,16 +14,11 @@ COPY . ./
 
 # Default to production mode
 ENV NODE_ENV production
-#ENV STREAM_URL
-#ENV FILE_DIR
-#ENV FILE_PREFIX
-#ENV FILE_EXT
 #ENV START_SCHEDULE
 #ENV DURATION_SEC
 #ENV POST_PROCESS_PROJECT_PATH /post
 
-VOLUME /data
 VOLUME /post
 
-CMD [ "npm", "start" ]
+CMD sh -c "envsubst < /usr/src/app/supervisor_conf/scheduler.ini > /etc/supervisor.d/scheduler.ini && envsubst < /usr/src/app/supervisor_conf/job.ini > /etc/supervisor.d/job.ini && exec supervisord -c /etc/supervisord.conf"
 
