@@ -18,6 +18,10 @@ ENV NODE_ENV production
 #ENV DURATION_SEC
 #ENV POST_PROCESS_PROJECT_PATH /post
 
+COPY supervisor_conf/job.ini /job/
+RUN ln -s /job/job.ini /etc/supervisor.d/job.ini
+
+VOLUME /job
 VOLUME /post
 
 CMD sh -c "envsubst < /usr/src/app/supervisor_conf/scheduler.ini > /etc/supervisor.d/scheduler.ini && envsubst < /usr/src/app/supervisor_conf/job.ini > /etc/supervisor.d/job.ini && exec supervisord -c /etc/supervisord.conf"
