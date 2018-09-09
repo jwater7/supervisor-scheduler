@@ -82,7 +82,7 @@ let job = new cron.CronJob(start_schedule, () => {
     if (post_proc_proj_path) {
       run_post_job();
     }
-  }, duration_sec * 1000, stream);
+  }, duration_sec * 1000);
 
 });
 
