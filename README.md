@@ -26,6 +26,10 @@ Optional:
 * /post
   * Place a node project in this directory to be run after the schedule is finished
 
+### Ports
+
+*  9001 - can be opened up for the supervisor remote management web console
+
 ### Be sure timezone is set in the docker container for an accurate schedule:
 ~~~~
     volumes:
