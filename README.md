@@ -19,6 +19,13 @@ Optional:
   * E.g. '/post' (see post-process project requirements)
 * "DEBUG=supervisor-scheduler:*"
 
+### Supported volumes
+
+* /job
+  * Place a "job.ini" file in this directory for the schedule to run it
+* /post
+  * Place a node project in this directory to be run after the schedule is finished
+
 ### Be sure timezone is set in the docker container for an accurate schedule:
 ~~~~
     volumes:
